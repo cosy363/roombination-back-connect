@@ -3,10 +3,47 @@ import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
 import { View, Text, Button, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient'
+import { Auth } from 'aws-amplify';
+
 
 function MainScreen({ navigation }) {
 
     const [count, setCount] = useState(null);
+    const [username, setUsername] = useState(null);
+    const [password, setPassword] = useState(null);
+    const [passwordconfirm, setPasswordconfirm] = useState(null);
+    const [email, setEmail] = useState(null);
+
+    async function signIn() {
+        try {
+          const user = await Auth.signIn(username, password);
+          console.log('user:', user);
+        } catch (error) {
+          console.log('error signing in', error);
+        }
+      }
+
+
+    async function signUp() {
+        try {
+          const { user } = await Auth.signUp({
+            username,
+            password,
+            attributes: {
+                email
+            },
+            autoSignIn: { // optional - enables auto sign in after user is confirmed
+              enabled: true,
+            }
+          });
+          console.log(user);
+          signIn(username,password)
+          navigation.navigate('budget')
+        } catch (error) {
+          console.log('error signing up:', error);
+        }
+      }
+
 
     return (
         <View style={styles.container}>
@@ -17,21 +54,21 @@ function MainScreen({ navigation }) {
 
             <View style={styles.one}>
                 <Text style={{ fontWeight: '900', fontSize: 14, color: "#6fbbf2" }}>아이디</Text>
-                <TextInput placeholder="Username" style={[styles.input, { paddingLeft: 10 }]} />
+                <TextInput placeholder="Username" value={username} onChangeText={(text) => setUsername(text)} style={[styles.input, { paddingLeft: 10 }]} />
 
                 <Text style={{ fontWeight: '900', fontSize: 14, color: "#6fbbf2", marginTop: 15, }}>비밀번호</Text>
-                <TextInput placeholder="Username" style={[styles.input, { paddingLeft: 10 }]} />
+                <TextInput placeholder="Password" value={password} onChangeText={(text) => setPassword(text)} secureTextEntry={true} style={[styles.input, { paddingLeft: 10 }]} />
 
                 <Text style={{ fontWeight: '900', fontSize: 14, color: "#6fbbf2", marginTop: 15, }}>비밀번호 확인</Text>
-                <TextInput placeholder="Username" style={[styles.input, { paddingLeft: 10 }]} />
+                <TextInput placeholder="Password Confirm" value={passwordconfirm} onChangeText={(text) => setPasswordconfirm(text)} secureTextEntry={true} style={[styles.input, { paddingLeft: 10 }]} />
 
                 <Text style={{ fontWeight: '900', fontSize: 14, color: "#6fbbf2", marginTop: 15, }}>이메일</Text>
-                <TextInput placeholder="Username" style={[styles.input, { paddingLeft: 10 }]} />
+                <TextInput placeholder="Email" value={email} onChangeText={(text) => setEmail(text)} style={[styles.input, { paddingLeft: 10 }]} />
             </View>
 
             <StatusBar style="auto" />
 
-            <TouchableOpacity activeOpacity={0.6} style={{ opacity: 0.8, marginTop:25, }}>
+            <TouchableOpacity onPress={() => signUp()} activeOpacity={0.6} style={{ opacity: 0.8, marginTop:25, }}>
                 <LinearGradient
                     colors={['#81d8f6', '#62cef4', '#5fc7f1', '#6fbbf2', '#79b4f3', '#74a6f3']}
                     start={{ x: 0.0, y: 1.0 }} end={{ x: 1.0, y: 1.0 }}

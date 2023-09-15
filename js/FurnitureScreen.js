@@ -16,9 +16,29 @@ import imagePath7 from '../assets/furniture/closet.jpg';
 import imagePath8 from '../assets/furniture/light.jpg';
 import imagePath9 from '../assets/furniture/rug.jpg';
 
+import { Auth } from 'aws-amplify';
+
 
 function MainScreen({ navigation }) {
   const [progressValue, setProgressValue] = useState(0);
+
+  // Update User Attribute 함수
+  const { attributes } = Auth.currentAuthenticatedUser();
+
+
+  async function updateUserAttributes (budget,cp,fp) {
+    try {
+      const user = await Auth.currentAuthenticatedUser();
+      const result = await Auth.updateUserAttributes(user, {
+        "custom:budget" : budget,
+        "custom:color_preference"	: cp.toString(),
+        "custom:furniture_preference" : fp.toString()
+      });
+      console.log(result); // SUCCESS
+    } catch(err) {
+      console.log(err);
+    }
+  };
 
   //Budget에서 받아온 데이터
   const route = useRoute();
@@ -60,6 +80,7 @@ function MainScreen({ navigation }) {
 
 
 
+
   const handleNextPress = () => {
     const selectedOverlaysCount =
       (overlay1 ? 1 : 0) +
@@ -79,6 +100,8 @@ function MainScreen({ navigation }) {
     }
 
     // 선택한 overlay가 1개 이상인 경우 다음 화면으로 이동
+    updateUserAttributes(input_budget,input_cp,[1,2,3,5])
+    
     navigation.navigate('main');
   };
 

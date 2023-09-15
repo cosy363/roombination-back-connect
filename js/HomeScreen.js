@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component,useState,useEffect } from 'react';
 import { StyleSheet, Text, View, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { AntDesign, Entypo } from '@expo/vector-icons';
 import axios from 'axios';
@@ -8,10 +8,42 @@ import money from '../assets/home/money.png';
 import palette from '../assets/home/palette.png';
 import bed from '../assets/home/bed.png';
 
+import { Auth } from 'aws-amplify';
+
+
 function MainScreen({ navigation }) {
 
   const error1 = false;
   const error2 = false;
+
+
+  // 코그니토에서 불러온 유저 정보
+  var cognito_userinfo = Auth.user.username
+  const [cognito_budget, setCognito_budget] = useState(null);
+  const [cognito_cp, setCognito_cp] = useState(null);
+  const [cognito_fp, setCognito_fp] = useState(null);
+
+  // 유저 정보 불러오기 (async 비동기로 구현해줘야댐)
+  useEffect(() => {
+    async function return_results() {
+      try {
+        const user =  await Auth.currentAuthenticatedUser();
+        const result =  await Auth.userAttributes(user);
+        a = result.find(attribute => attribute.Name === 'custom:budget')?.Value;
+        b = result.find(attribute => attribute.Name === 'custom:color_preference')?.Value;
+        c = result.find(attribute => attribute.Name === 'custom:furniture_preference')?.Value;
+        setCognito_budget(a);
+        setCognito_cp(b);
+        setCognito_fp(c);
+
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    return_results();
+  },[]);
+  
+
 
   const hard_userinfo = 'test_username';
   const hard_fp = [1, 3, 8, 9] //침대, 책상, 러그, 조명
@@ -70,7 +102,7 @@ function MainScreen({ navigation }) {
       <ScrollView showsVerticalScrollIndicator={false}>
 
         <View style={{ marginTop: 110, marginLeft: 10, }}>
-          <Text style={styles.hello}>Username님</Text>
+          <Text style={styles.hello}>{cognito_userinfo}님</Text>
           <Text style={styles.hello}>안녕하세요</Text>
         </View>
 
@@ -110,7 +142,7 @@ function MainScreen({ navigation }) {
 
             <View>
               <Text style={styles.set_main_text}>예산 </Text>
-              <Text style={styles.set_side_text}>300,000원</Text>
+              <Text style={styles.set_side_text}>{cognito_budget}원</Text>
             </View>
           </View>
           

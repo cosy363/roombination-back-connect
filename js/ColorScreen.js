@@ -107,10 +107,17 @@ function MainScreen({ navigation }) {
     }
 
     // 선택한 overlay가 1개 이상인 경우 다음 화면으로 이동
+    // navigation.navigate('furniture', {
+    //   input_username: '',
+    //   input_budget: input_budget,
+    //   input_cp: inputCP,
+    //   input_fp: [],
+    // });
+    //하드코딩
     navigation.navigate('furniture', {
       input_username: '',
       input_budget: input_budget,
-      input_cp: inputCP,
+      input_cp: [1,2,3,4],
       input_fp: [],
     });
   };

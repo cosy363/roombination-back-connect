@@ -37,7 +37,7 @@ function MainScreen({ navigation }) {
       // 입력이 비어 있지 않은 경우
       setIsInputEmpty(false);
       setShowErrorMessage(false); // 에러 메시지를 숨기도록 설정
-    
+      console.log(inputText)
       // 여기에서 다음 화면으로 이동하거나 다른 작업을 수행할 수 있습니다.
       navigation.navigate('color', {
         input_username: '',
@@ -68,6 +68,7 @@ function MainScreen({ navigation }) {
           keyboardType="numeric"
           returnKeyType="done"
           placeholder="250,000"
+          value={inputText}
           onChangeText={(text) => {
             setInputText(text);
             setIsInputEmpty(text.trim() === '');
